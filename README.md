@@ -1,2 +1,2 @@
-# Java Chess
- Java Chess (Engine in future)
+# Java Chess Engine
+ Java Chess Engine
