@@ -5,7 +5,8 @@ import java.util.LinkedList;
 
 public class Siyah {
 	ArrayList<Integer> hamle = new ArrayList<Integer>();	
-	public ArrayList<Integer> hamleleriAl(int[] tahta, ArrayList<Integer> sahTehtid, PerformansTest p) {		
+	public ArrayList<Integer> hamleleriAl(int[] tahta, ArrayList<Integer> sahTehtid, PerformansTest p) {
+		hamle.clear();
 		for (int i = 0;i < tahta.length;i++) {
 			switch (tahta[i]) {
 			case -900:
@@ -23,7 +24,7 @@ public class Siyah {
 			case -5:
 				if (p.getSiyahSahCekis() == 0 && acmazTest(i,tahta[i],tahta,p) == 0) {kale(i,i%8,i/8,tahta);} else if (p.getSiyahSahCekis() == 1) {sahCekisArama(tahta[i],i,tahta,p);}				
 				break;
-			case 1:
+			case -1:
 				if (p.getSiyahSahCekis() == 0 && acmazTest(i,tahta[i],tahta,p) == 0) {piyon(i,i%8,i/8,tahta,p);} else if (p.getSiyahSahCekis() == 1) {sahCekisArama(tahta[i],i,tahta,p);}
 				break;
 			}
@@ -65,14 +66,14 @@ public class Siyah {
 		dikeyYatay(i,x,y,tahta);
 	}
 	public void piyon(int i, int x, int y, int[] tahta, PerformansTest p) {
-		if (y-1 > 0 && tahta[(y-1)*8+x] == 0.0) {hamle.add(1*100000+(y-1)*10000+(x)*1000+(y)*100+(x)*10);}
-		if (y == 6 && tahta[(y-2)*8+x] == 0.0 && tahta[(y-1)*8+x] == 0.0) {hamle.add(1*1000000+(y-2)*10000+(x)*1000+(y)*100+(x)*10);}
-		if (x-1 > -1 && y-1 > 0 && tahta[(y-1)*8+x-1] > 0) {hamle.add(1*100000+(y-1)*10000+(x-1)*1000+(y)*100+(x)*10);}
-		if (x+1 < 8  && y-1 > 0 && tahta[(y-1)*8+x+1] > 0) {hamle.add(1*100000+(y-1)*10000+(x+1)*1000+(y)*100+(x)*10);}		
-		if (y == 1 && tahta[(y-1)*8+x] == 0.0) {hamle.add(9*100000000+(y-1)*10000+(x)*1000+(y)*100+(x)*10);hamle.add(4*10000000+(y-1)*10000+(x)*1000+(y)*100+(x)*10);hamle.add(3*10000000+(y-1)*10000+(x)*1000+(y)*100+(x)*10);hamle.add(5*10000000+(y-1)*10000+(x)*1000+(y)*100+(x)*10);}		
-		if (x-1 > -1 && y == 1 && tahta[(y-1)*8+x-1] > 0) {hamle.add(9*100000000+(y-1)*10000+(x-1)*1000+(y)*100+(x)*10);hamle.add(4*10000000+(y-1)*10000+(x-1)*1000+(x)*100+(x)*10);hamle.add(3*10000000+(y-1)*10000+(x-1)*1000+(i/8)*100+(x)*10);hamle.add(5*10000000+(y-1)*10000+(x-1)*1000+(y)*100+(x)*10);}
-		if (x+1 < 8  && y == 1 && tahta[(y-1)*8+x+1] > 0) {hamle.add(9*100000000+(y-1)*10000+(x+1)*1000+(y)*100+(x)*10);hamle.add(4*10000000+(y-1)*10000+(x+1)*1000+(y)*100+(x)*10);hamle.add(3*10000000+(y-1)*10000+(x+1)*1000+(i/8)*100+(x)*10);hamle.add(5*10000000+(y-1)*10000+(x+1)*1000+(y)*100+(x)*10);}
-		if (p.getGecerkenAlma() > -1 && Math.abs(p.getGecerkenAlma()-i%8) == 1 && i/8 == 4 && gecerkenAlmaAcmaz(i,tahta,p)) {hamle.add(1*10000000+(i/8+1)*10000+(p.getGecerkenAlma())*1000+(i/8)*100+(i%8)*10);}
+		if (y+1 < 7 && tahta[(y+1)*8+x] == 0.0) {hamle.add(1*100000+(y+1)*10000+(x)*1000+(y)*100+(x)*10);}
+		if (y == 1 && tahta[(y+2)*8+x] == 0.0 && tahta[(y+1)*8+x] == 0.0) {hamle.add(1*1000000+(y+2)*10000+(x)*1000+(y)*100+(x)*10);}
+		if (x-1 > -1 && y+1 < 7 && tahta[(y+1)*8+x-1] > 0) {hamle.add(1*100000+(y+1)*10000+(x-1)*1000+(y)*100+(x)*10);}
+		if (x+1 < 8  && y+1 < 7 && tahta[(y+1)*8+x+1] > 0) {hamle.add(1*100000+(y+1)*10000+(x+1)*1000+(y)*100+(x)*10);}		
+		if (y == 6 && tahta[(y+1)*8+x] == 0.0) {hamle.add(9*100000000+(y+1)*10000+(x)*1000+(y)*100+(x)*10);hamle.add(4*10000000+(y+1)*10000+(x)*1000+(y)*100+(x)*10);hamle.add(3*10000000+(y+1)*10000+(x)*1000+(y)*100+(x)*10);hamle.add(5*10000000+(y+1)*10000+(x)*1000+(y)*100+(x)*10);}		
+		if (x-1 > -1 && y == 6 && tahta[(y+1)*8+x-1] > 0) {hamle.add(9*100000000+(y+1)*10000+(x-1)*1000+(y)*100+(x)*10);hamle.add(4*10000000+(y+1)*10000+(x-1)*1000+(x)*100+(x)*10);hamle.add(3*10000000+(y+1)*10000+(x-1)*1000+(i/8)*100+(x)*10);hamle.add(5*10000000+(y+1)*10000+(x-1)*1000+(y)*100+(x)*10);}
+		if (x+1 < 8  && y == 6 && tahta[(y+1)*8+x+1] > 0) {hamle.add(9*100000000+(y+1)*10000+(x+1)*1000+(y)*100+(x)*10);hamle.add(4*10000000+(y+1)*10000+(x+1)*1000+(y)*100+(x)*10);hamle.add(3*10000000+(y+1)*10000+(x+1)*1000+(i/8)*100+(x)*10);hamle.add(5*10000000+(y+1)*10000+(x+1)*1000+(y)*100+(x)*10);}
+		if (p.getGecerkenAlma() > -1 && Math.abs(p.getGecerkenAlma()-i%8) == 1 && i/8 == 4 && gecerkenAlmaAcmaz(i,tahta,p)) {hamle.add(1*10000000+(y+1)*10000+(p.getGecerkenAlma())*1000+(y)*100+(x)*10);}
 	}
 	public void sahCekisArama(int tas, int i, int[] tahta, PerformansTest k) {		
 		 LinkedList<Integer> mudaheleKareleri = k.sahMudaheleKareAl();
@@ -155,16 +156,16 @@ public class Siyah {
     	else if (sahY == i/8 && sahX < i%8) {    		
     		if (j == -1) {return piyonAcmaz(j,4,i,(i%8-sahX)-1,tahta,p);} else {return acmazKontrol(j,4,i,(i%8-sahX)-1,tahta,p);}	
     	}
-    	else if (sahY*8+sahX %9 == i%9 && sahY > i/8) {    		    	
+    	else if ((sahY*8+sahX) %9 == i%9 && sahY > i/8) {    		    	
     		if (j == -1) {return piyonAcmaz(j,10,i,sahY*8+sahX-i/9-1,tahta,p);} else {return acmazKontrol(j,5,i,(sahY*8+sahX-i)/9-1,tahta,p);}
     	}
-    	else if (sahY*8+sahX %9 == i%9 && sahY < i/8) {    		
+    	else if ((sahY*8+sahX) %9 == i%9 && sahY < i/8) {    		
     		if (j == -1) {return piyonAcmaz(j,6,i,(i-(sahY*8+sahX))/9-1,tahta,p);} else {return acmazKontrol(j,6,i,(i-(sahY*8+sahX))/9-1,tahta,p);}
     	}
-    	else if (sahY*8+sahX % 7 == i%7 && sahY > i/8 && sahX < i%8) {    		
+    	else if ((sahY*8+sahX) % 7 == i%7 && sahY > i/8 && sahX < i%8) {    		
     		if (j == -1) {return piyonAcmaz(j,9,i,(sahY*8+sahX-i)/7-1,tahta,p);} else {return acmazKontrol(j,7,i,(sahY*8+sahX-i)/7-1,tahta,p);}
     	}
-    	else if (sahY*8+sahX % 7 == i%7 && sahY < i/8 && sahX > i%8) {    		
+    	else if ((sahY*8+sahX) % 7 == i%7 && sahY < i/8 && sahX > i%8) {    		
     		if (j == -1) {return piyonAcmaz(j,8,i,(i-(sahY*8+sahX))/7-1,tahta,p);} else {return acmazKontrol(j,8,i,(i-(sahY*8+sahX))/7-1,tahta,p);}
     	}
 		return 0;
