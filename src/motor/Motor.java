@@ -3,16 +3,18 @@ package motor;
 import oyun.Oyun;
 
 public class Motor extends Oyun {
-	Tahta t = new Tahta();
+	Tahta t = new Tahta();	
+	Hesap h = new Hesap();
 	PerformansTest p = new PerformansTest();
 	Hamleler hamle = new Hamleler();
-	double[] temizTahta = p.getTahta();	
-	long maksimumDerinlik = 7, toplamHamle = 0, varyant;
+	long maksimumDerinlik = 1, toplamHamle = 0, varyant;
+	int makineHamlesi = 0;
+	double alfa, beta;
 	public Motor() {
-		long mili = System.nanoTime();				
-		FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-		//FEN("8/7p/6p1/1p2k1P1/4p1KP/2PbR3/8/8 b - - 9 46");
-		performansTestKok(1,p.isSiraKimde(),p.getTahta());
+		long mili = System.nanoTime();		
+		FEN("r1bqkbnr/pppppppp/2n5/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 1 2");		
+		//performansTestKok(1,p.isSiraKimde(),p.getTahta());
+		//minmax(1,p.isSiraKimde(),p.getTahta(),true);		
 		System.out.println("Toplam Hamle = "+toplamHamle+" Alınan taş sayısı = "+hamle.captures+" Çekilen şah sayısı "+hamle.toplamSahSayisi+" Geçerken Alma "+hamle.gecerkenAl+" Atılan rok sayısı "+hamle.rok+" Mat sayisi "+hamle.mat);
 		double kacSaniye = ((System.nanoTime() - mili)/ 1000000000.0);
         System.out.println(kacSaniye);
@@ -21,98 +23,79 @@ public class Motor extends Oyun {
 	public static void main(String [] args) {		
 		new Motor();
 	}		
-	/*public void performansTest(int derinlik, boolean siraKimde, double[] tahta) {
-		if (derinlik < maksimumDerinlik) {			
-			int[] hamleler = hamle.hamleleriAl(siraKimde, tahta, p);			
-			for (int i : hamleler) {
-				t.hamleYap(i, false, siraKimde, tahta,p);
-				//System.out.println(i);
-				//tahtayiGoster(tahta);
-				if (derinlik+1==maksimumDerinlik) {toplamHamle++;varyant++;}
-				performansTest(derinlik+1,!siraKimde,tahta);
-				t.hamleYap(i, true, siraKimde, tahta,p);
-				//tahtayiGoster(tahta);
+	
+	public void minmax(int derinlik, boolean siraKimde, int[] tahta, boolean minimumSkorYadaMaksimumSkor) {
+		if (derinlik < maksimumDerinlik) {
+			if (minimumSkorYadaMaksimumSkor) {
+				max(derinlik, siraKimde, tahta);				
+			} else {
+				min(derinlik, siraKimde, tahta);				
 			}
-		} 
-	}*/
-	public void performansTestKok(int derinlik, boolean siraKimde, double[] tahta) {
-		System.out.println("Hedef Derinlik "+(maksimumDerinlik-1));
-		int[] hamleler = hamle.hamleleriAl(siraKimde, tahta, p);
-		for (int i : hamleler) {			
-			t.hamleYap(i, false, siraKimde, tahta, p, derinlik-1);
-			//System.out.println(i+" "+siraKimde);
-			//tahtayiGoster(tahta);
-			if (derinlik+1==maksimumDerinlik) {toplamHamle++;}
-			performansTest(derinlik+1,!siraKimde,tahta);
-			System.out.println(mevcutHamleNotasyon(i,siraKimde) +" "+ varyant);
-			varyant = 0;
-			t.hamleYap(i, true, siraKimde, tahta, p, derinlik-1);
-			//tahtayiGoster(tahta);
+		}			
+	}
+	//System.out.println(mevcutHamleNotasyon(makineHamlesi,siraKimde)+" "+beta/100);
+	public void min(int derinlik, boolean siraKimde, int[] tahta) {
+		if (derinlik < maksimumDerinlik) {			
+			int[] hamleler = hamle.hamleleriAl(siraKimde, tahta, p);
+			for (int i : hamleler) {
+				t.hamleYap(i, false, siraKimde, tahta, p, derinlik-1);			
+				if (beta > h.analiz(tahta, siraKimde)) {					
+					//tahtayiGoster(tahta);
+					beta = h.analiz(tahta, siraKimde);
+					makineHamlesi = i;
+				}				
+				if (derinlik+1==maksimumDerinlik) {toplamHamle++;varyant++;}
+				minmax(derinlik+1,!siraKimde,tahta,true);
+				t.hamleYap(i, true, siraKimde, tahta, p, derinlik-1);
+			}
 			
 		}
 	}
-	public void performansTest(int derinlik, boolean siraKimde, double[] tahta) {
+	public void max(int derinlik, boolean siraKimde, int[] tahta) {
 		if (derinlik < maksimumDerinlik) {
 			int[] hamleler = hamle.hamleleriAl(siraKimde, tahta, p);
 			for (int i : hamleler) {
-				//System.out.println(i);				
-				t.hamleYap(i, false, siraKimde, tahta, p, derinlik-1);
-				//tahtayiGoster(tahta);
-				if (derinlik+1==maksimumDerinlik) {toplamHamle++;varyant++;}													
-				performansTest(derinlik+1,!siraKimde,tahta);				
+				t.hamleYap(i, false, siraKimde, tahta, p, derinlik-1);				
+				if (alfa < h.analiz(tahta, siraKimde)) {					
+					//tahtayiGoster(tahta);
+					alfa = h.analiz(tahta, siraKimde);
+					makineHamlesi = i;
+				}
+				if (derinlik+1==maksimumDerinlik) {toplamHamle++;varyant++;}				
+				minmax(derinlik+1,!siraKimde,tahta,false);
 				t.hamleYap(i, true, siraKimde, tahta, p, derinlik-1);
-				//tahtayiGoster(tahta);
-				
-			}
+			}				
 		}
 	}
 	public String mevcutHamleNotasyon(int i, boolean hangiRenk) {		
-		String hamle = "";		
-			if (hangiRenk) {
-				if (i/100000 == 900) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else  if (i/100000 == 9 || i/1000000 == 9 || i/100000000 == 9) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else  if (i/100000 == 3 || i/1000000 == 3 || i/10000000 == 3) {					
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else  if (i/100000 == 4 || i/1000000 == 4 || i/10000000 == 4) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else  if (i/100000 == 5 || i/1000000 == 5 || i/10000000 == 5) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else  if (i/100000 == 1 || i/1000000 == 1) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else if (i == 2000000) {
-					hamle = "O-O";
-				} else if (i == 6000000) {
-					hamle = "O-O-O";
-				}				 
-				//System.out.println(hamle);
-			} else {
-				if (i/100000 == 900) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else  if (i/100000 == 9 || i/1000000 == 9 || i/100000000 == 9) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else  if (i/100000 == 3 || i/1000000 == 3 || i/10000000 == 3) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else  if (i/100000 == 4 || i/1000000 == 4 || i/10000000 == 4) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else  if (i/100000 == 5 || i/1000000 == 5 || i/10000000 == 5) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else  if (i/100000 == 1 || i/1000000 == 1) {
-					hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
-				} else if (i == 2000000) {
-					hamle = "O-O";
-				} else if (i == 6000000) {
-					hamle = "O-O-O";
-				}
-				//System.out.println(hamle);
-			}			
+		String hamle = "";
+		hamle =""+Character.toLowerCase((char)(i/10%10+65))+notasyonCevir(i/100%10)+Character.toLowerCase((char)(i/1000%10+65))+notasyonCevir(i/10000%10);
+		switch(i/1000000) {
+		case 900:
+			hamle +="Q";
+			break;
+		case 50:
+			hamle +="R";
+			break;
+		case 40:
+			hamle +="B";
+			break;
+		case 30:
+			hamle +="N";
+			break;
+		case 2:
+			hamle = "O-O";
+			break;
+		case 6:
+			hamle = "O-O-O";
+			break;
+		}						
 		return hamle;
 	}
 	public void FEN(String fen) {
-		boolean siraKimde = false, siyahKisaRok = false, siyahUzunRok = false, beyazKisaRok = false, beyazUzunRok = false;
-		int siyahSahKonum = 0, beyazSahKonum = 0;
-		double[] tahta = new double[64];
+		boolean siraKimde = false, siyahKisaRok = false, siyahUzunRok = false, beyazKisaRok = false, beyazUzunRok = false, rokIhtimal = false;
+		int siyahSahKonum = 0, beyazSahKonum = 0, gecerkenAlma = -1;
+		int[] tahta = new int[64];
 		for (int i = 0, j = -1;i < fen.length();i++) {			
 			if (j < 63 && fen.charAt(i) != '/') {				
 				if (Character.isDigit(fen.charAt(i))) {					
@@ -121,36 +104,35 @@ public class Motor extends Oyun {
 					j++;
 				}																
 				if (fen.charAt(i) == 'r') {
-					tahta[j] = -5.0;
+					tahta[j] = -5;
 				} else if (fen.charAt(i) == 'n') {
-					tahta[j] = -3.0;
+					tahta[j] = -3;
 				} else if (fen.charAt(i) == 'b') {
-					tahta[j] = -4.0;
+					tahta[j] = -4;
 				} else if (fen.charAt(i) == 'q') {
-					tahta[j] = -9.0;
+					tahta[j] = -9;
 				} else if (fen.charAt(i) == 'k') {					
 					siyahSahKonum = j/8*10+j%8;					
-					tahta[j] = -900.0;
+					tahta[j] = -900;
 				} else if (fen.charAt(i) == 'p') {
-					tahta[j] = -1.0;
+					tahta[j] = -1;
 				} else if (fen.charAt(i) == 'R') {
-					tahta[j] = 5.0;
+					tahta[j] = 5;
 				} else if (fen.charAt(i) == 'N') {
-					tahta[j] = 3.0;
+					tahta[j] = 3;
 				} else if (fen.charAt(i) == 'B') {
-					tahta[j] = 4.0;
+					tahta[j] = 4;
 				} else if (fen.charAt(i) == 'Q') {
-					tahta[j] = 9.0;
+					tahta[j] = 9;
 				} else if (fen.charAt(i) == 'K') {
 					beyazSahKonum = j/8*10+j%8;
-					tahta[j] = 900.0;
+					tahta[j] = 900;
 				} else if (fen.charAt(i) == 'P') {
-					tahta[j] = 1.0;
+					tahta[j] = 1;
 				} 				
 				if (j == 63) {j++;}
 			} else if (j > 63) {				
-				j++;
-				
+				j++;				
 				if (j == 66 && fen.charAt(i) == 'w') {					
 					siraKimde = true;					
 				} else if (j == 66 && fen.charAt(i) == 'b') {										
@@ -159,6 +141,10 @@ public class Motor extends Oyun {
 				for (int p = i;j == 68 && p < 62 && fen.charAt(p) != ' ';p++) {					
 					switch(fen.charAt(p)) {
 					case '-':
+						rokIhtimal = true;
+						if (Character.isAlphabetic(fen.charAt(p+2))) {
+							gecerkenAlma =Character.getNumericValue(fen.charAt(p+2))-10;
+						}						 			
 						break;
 					case 'K':
 						beyazKisaRok = true;
@@ -169,15 +155,20 @@ public class Motor extends Oyun {
 					case 'k':
 						siyahKisaRok = true;
 						break;
-					case 'q':
+					case 'q':						
 						siyahUzunRok = true;
-						break;
+						break;					
 					}
-				}			
+					if (!rokIhtimal) {
+						if (Character.isAlphabetic(fen.charAt(p+2))) {
+							gecerkenAlma =Character.getNumericValue(fen.charAt(p+2))-10;
+						}						 			
+					}
+				}				
 			}			
-		}
-		tahtayiGoster(tahta);
-		p = new PerformansTest(siraKimde, beyazKisaRok, beyazUzunRok, siyahKisaRok, siyahUzunRok, tahta, siyahSahKonum, beyazSahKonum);		
+		}		
+		tahtayiGoster(tahta);		
+		p = new PerformansTest(siraKimde, beyazKisaRok, beyazUzunRok, siyahKisaRok, siyahUzunRok, tahta, siyahSahKonum, beyazSahKonum, gecerkenAlma);				
 	}
 	public int notasyonCevir(int j) {
 		switch (j) {
