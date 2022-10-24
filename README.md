@@ -1,2 +1,2 @@
-# Java Chess Engine
- Java Chess Engine
+# Java Chess Movegenerator
+ Java Chess movegenerator
